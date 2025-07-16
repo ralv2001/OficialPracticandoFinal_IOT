@@ -4,10 +4,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-....(name = ".......")
+@FeignClient(name = "service-employee-hr", url = "http://localhost:8072")
 public interface ServiceBuscarClient {
 
-    @GetMapping("/.... Modificar ...../{ordercolum}")
-    String listar(@PathVariable("ordercolum") String  ordercolum);
+    @GetMapping("/rh/empleado/orderby/{ordercolum}")
+    String listar(@PathVariable("ordercolum") String ordercolum);
 
 }
