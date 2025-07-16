@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
-
-//Completar lo que falta
+@RestController
 public class EmployeeController {
 
     final EmployeeRepository employeeRepository;
@@ -20,35 +20,46 @@ public class EmployeeController {
         this.employeeRepository = employeeRepository;
     }
 
-    @GetMapping(value="....", produces="application/json")
-    public List<Employee> listaEmpleados(........ String  ordercolum)
+    // PREGUNTA 1: Listar empleados ordenados por campo
+    @GetMapping(value="/rh/empleado/orderby/{order}", produces="application/json")
+    public List<Employee> listaEmpleados(@PathVariable("order") String ordercolum) {
 
-    {
-      
-        return ....;
+        // Mapear nombres de columnas como en JobController
+        if (ordercolum.toLowerCase().equals("firstname")) {
+            ordercolum = "firstName";
+        } else if (ordercolum.toLowerCase().equals("lastname")) {
+            ordercolum = "lastName";
+        } else if (ordercolum.toLowerCase().equals("jobitle")) {
+            ordercolum = "jobID";
+        }
+
+        return employeeRepository.findAll(Sort.by(Sort.Direction.ASC, ordercolum));
     }
 
-    @GetMapping(value="....", produces="application/json")
-    public Employee infoEmpleados(......Integer id)
+    // PREGUNTA 2: Información de empleado por ID
+    @GetMapping(value="/rh/empleado/{id}", produces="application/json")
+    public Employee infoEmpleados(@PathVariable("id") Integer id) {
 
-    {
-        return .....;
+        Optional<Employee> optEmployee = employeeRepository.findById(id);
+        if (optEmployee.isPresent()) {
+            return optEmployee.get();
+        } else {
+            return null; // O lanzar excepción según preferencia
+        }
     }
 
-    @PostMapping(........, consumes = "application/json", produces = "application/json")
+    // PREGUNTA 3: Registrar nuevo empleado
+    @PostMapping(value="/rh/empleado", consumes = "application/json", produces = "application/json")
     public ResponseEntity<HashMap<String, Object>> agregarEmpleado(
             @RequestBody Employee newEmployee) {
-        // Lógica para agregar el empleado a la lista (o base de datos)
-        employeeRepository.------(newEmployee);
-        //Completar
-		//Completar
-		//Completar
-		//Completar
-		
+
+        // Guardar el empleado en la base de datos
+        Employee savedEmployee = employeeRepository.save(newEmployee);
+
+        // Crear respuesta JSON
+        HashMap<String, Object> responseJson = new HashMap<>();
+        responseJson.put("id", savedEmployee.getId());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(responseJson);
     }
-
-
-
-
 }
